@@ -1,0 +1,20 @@
+version: '3'
+services: 
+  eco-patrol-backend: 
+    build: .
+    depends_on: 
+      - db
+      - admin
+    ports:
+      - "3000:3000"
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: 'admin'
+      MYSQL_DATABASE: 'ecopatroldb'
+    ports:
+      - "3306:3306"
+  admin:
+    image: adminer
+    ports:
+      - "8082:8080"
