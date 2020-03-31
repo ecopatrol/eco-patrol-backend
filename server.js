@@ -13,10 +13,10 @@ app.get('/', (req, res) => {
     mysqlService.init().then((result) => res.send(result)).catch((error) => res.send(error));
 })
 
-app.get('/login', (req, res) => {
-    mysqlService.login(req.body.username, req.body.password).then((result) => {
+app.post('/auth', (req, res) => {
+    mysqlService.auth(req.body.username, req.body.password).then((result) => {
         res.status(200).send();
-    }).catch((error) => res.status(403).json(error));
+    }).catch((error) => res.status(401).json(error));
 });
 
 app.post('/register', (req, res) => {

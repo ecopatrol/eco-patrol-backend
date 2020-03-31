@@ -10,17 +10,22 @@ init = async () => {
     });
 };
 
-login = async (username, password) => {
+auth = async (username, password) => {
     return new Promise((resolve, reject) => {
-        let query = `SELECT * FROM users WHERE username = '${username}' and password = '${password}';`
-        pool.query(query, (error, results, fields) => {
-            if(error)
-                reject(error);
-            if(results.length == 1)
-                resolve(results);
-            else
-                reject(new Error('Caller is not authorized'));
-        });
+        if(username && password) {
+            let query = `SELECT * FROM users WHERE username = '${username}' and password = '${password}';`
+            pool.query(query, (error, results, fields) => {
+                if(error)
+                    reject(error);
+                else if(results.length == 1)
+                    resolve(results);
+                else
+                    reject(new Error('Incorrect Username and/or Password!'));
+            });
+        }
+        else {
+            reject(new Error('Please enter Username and Password!'));
+        }
     });
 };
 
@@ -41,6 +46,6 @@ register = async (username, email, password) => {
 
 module.exports = {
     init,
-    login,
+    auth,
     register
 }
