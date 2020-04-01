@@ -31,16 +31,20 @@ auth = async (username, password) => {
 
 register = async (username, email, password) => {
     return new Promise((resolve, reject) => {
-        let query = `
-        INSERT INTO users (username, email, password) 
-        VALUES ('${username}', '${email}','${password}');`
-        
-        pool.query(query, (error, results, fields) => {
-            if(error)
-                reject(error);
-            else
-                resolve(results);
-        });
+        if(username && email && password) {
+            let query = `
+            INSERT INTO users (username, email, password) 
+            VALUES ('${username}', '${email}','${password}');`
+            
+            pool.query(query, (error, results, fields) => {
+                if(error)
+                    reject(error);
+                else
+                    resolve(results);
+            }); 
+        }
+        else
+            reject(new Error('Please fill up all fields!'))
     });
 };
 

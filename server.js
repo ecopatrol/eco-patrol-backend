@@ -5,9 +5,9 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const mysqlService = require('./persistance/mysqlService')
 
-app.use(bodyParser.json());
-
 app.use(cors());
+
+app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
     mysqlService.init().then((result) => res.send(result)).catch((error) => res.send(error));
