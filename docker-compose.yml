@@ -1,5 +1,5 @@
 version: '3'
-services: 
+services:
   eco-patrol-backend: 
     build: .
     depends_on: 
