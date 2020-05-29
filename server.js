@@ -37,8 +37,8 @@ app.post('/report', (req, res) => {
     }).catch((error) => res.status(500).send(error));
 });
 
-app.put('/users/:email', (req, res) => {
-    mysqlService.updateUserData(req.params.email, req.body).then((result) => {
+app.put('/users/:username', (req, res) => {
+    mysqlService.updateUserData(req.params.username, req.body).then((result) => {
        res.status(200).send(result);
     }).catch((error) => res.status(500).send(error));
 });

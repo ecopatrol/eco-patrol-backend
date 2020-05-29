@@ -126,9 +126,9 @@ register = async (requestBody) => {
     });
 };
 
-updateUserData = async (email, requestBody) => {
+updateUserData = async (username, requestBody) => {
     return new Promise((resolve, reject) => {
-        if(email) {
+        if(username) {
             let queryUpdateUserData = `UPDATE users SET `;
             for(let attribute in requestBody) {
                 if(attribute.toString().localeCompare('password') == 0) 
@@ -136,7 +136,7 @@ updateUserData = async (email, requestBody) => {
                 queryUpdateUserData = queryUpdateUserData.concat(attribute + `='` + requestBody[attribute] + `',`);
             }
             queryUpdateUserData = queryUpdateUserData.slice(0, -1);
-            queryUpdateUserData = queryUpdateUserData.concat(` WHERE email='${email}';`);
+            queryUpdateUserData = queryUpdateUserData.concat(` WHERE username='${username}';`);
             
             pool.query(queryUpdateUserData, (error, results, fields) => {
                 if(error)
@@ -166,9 +166,9 @@ getReports = async () => {
 
 postReport = async (requestBody) => {
     return new Promise((resolve, reject) => {
-        let {email, longitude, latitude, category, description} = requestBody;
-        if(email && longitude && latitude && category && description) {
-            let queryGetUserId = `SELECT id FROM users WHERE email = '${email}';`;
+        let {username, longitude, latitude, category, description} = requestBody;
+        if(username && longitude && latitude && category && description) {
+            let queryGetUserId = `SELECT id FROM users WHERE username = '${username}';`;
             pool.query(queryGetUserId, (error, results, fields) => {
                 if(error) {
                     resolve(error);
@@ -278,6 +278,5 @@ module.exports = {
     getReports,
     postReport,
     getUserAwards,
-    postUserAward,
-    increaseUserPoints
+    postUserAward
 }
