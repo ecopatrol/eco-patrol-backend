@@ -1,5 +1,6 @@
 FROM node:10-alpine
 WORKDIR /home/app/
 COPY . .
-EXPOSE 8080
+RUN npm install
+EXPOSE 3000
 CMD ["npm", "start"]
