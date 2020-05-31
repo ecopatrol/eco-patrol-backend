@@ -43,7 +43,7 @@ init = async () => {
             id INT AUTO_INCREMENT PRIMARY KEY,
             longitude REAL NOT NULL,
             latitude REAL NOT NULL,
-            category INT,
+            category VARCHAR(255),
             description TINYTEXT NOT NULL,
             picture BLOB,
             user_id INT NOT NULL,
@@ -175,7 +175,7 @@ postReport = async (requestBody) => {
                 }
                 else {
                     let userId = results[0].id;
-                    let queryCheckIfExists=`SELECT * FROM reports WHERE longitude=${longitude} and latitude=${latitude} and category=${category} and user_id=${userId};`;
+                    let queryCheckIfExists=`SELECT * FROM reports WHERE longitude=${longitude} and latitude=${latitude} and category='${category}' and user_id=${userId};`;
                     pool.query(queryCheckIfExists, (error, results, fields) => {
                         if(error)
                             reject(error);
