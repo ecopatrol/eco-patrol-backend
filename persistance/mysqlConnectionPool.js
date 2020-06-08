@@ -1,3 +1,8 @@
+/**
+ * MySQL connection pool
+ * @author mm170395
+ */
+
 var mysql = require('mysql');
 var pool = mysql.createPool({
     connectionLimit: 10,
