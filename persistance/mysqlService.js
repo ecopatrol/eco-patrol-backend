@@ -1,11 +1,15 @@
 /**
  * MySQL service methods
  * @author mm170395
+ * @author ml170722
  */
 
 const pool = require('./mysqlConnectionPool');
 const bcrypt = require('bcrypt')
 
+/**
+ * Function to create tables and init database.
+ */
 init = async () => {
     return new Promise((resolve, reject) => {
         let queryInitDatabase = [
@@ -59,7 +63,7 @@ init = async () => {
         );`,
         `CREATE TABLE IF NOT EXISTS awards(
             id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(100) NOT NULL,
+            name VARCHAR(100) UNIQUE NOT NULL,
             description TINYTEXT NOT NULL,
             points_required INT NOT NULL
         );`,
@@ -77,7 +81,11 @@ init = async () => {
         ` INSERT INTO permissions (resource, permissions, role_id) SELECT 'reports', 'rd', id from roles where role_name='operator';`,
         ` INSERT INTO permissions (resource, permissions, role_id) SELECT 'reports', 'cr', id from roles where role_name='operator';`,
         ` INSERT INTO users (username, email, password) VALUES ('admin', 'admin@email.com', '$2b$10$3Wh/wzW.N.TBYGXN0xyBOO0GCRUfsdCegNtwnSGn.ua2wsSSwttne');`,
-        ` INSERT INTO users_roles (user_id, role_id) SELECT users.id, roles.id FROM roles, users WHERE roles.role_name='administrator' and users.username='admin';`
+        ` INSERT INTO users_roles (user_id, role_id) SELECT users.id, roles.id FROM roles, users WHERE roles.role_name='administrator' and users.username='admin';`,
+        ` INSERT INTO awards (name, description, points_required) VALUES ('KidsBike','Lorem Ipsum er rett og slett dummytekst fra og for trykkeindustrien. Lorem Ipsum har vært bransjens standard for dummytekst helt siden 1500-tallet, da en ukjent boktrykker stokket en mengde bokstaver for å lage et prøveeksemplar av en bok', 150)`,
+        ` INSERT INTO awards (name, description, points_required) VALUES ('ConcertTickets','Lorem Ipsum er rett og slett dummytekst fra og for trykkeindustrien. Lorem Ipsum har vært bransjens standard for dummytekst helt siden 1500-tallet, da en ukjent boktrykker stokket en mengde bokstaver for å lage et prøveeksemplar av en bok', 50)`,
+        ` INSERT INTO awards (name, description, points_required) VALUES ('ElectricScooter','Lorem Ipsum er rett og slett dummytekst fra og for trykkeindustrien. Lorem Ipsum har vært bransjens standard for dummytekst helt siden 1500-tallet, da en ukjent boktrykker stokket en mengde bokstaver for å lage et prøveeksemplar av en bok', 200)`,
+        ` INSERT INTO awards (name, description, points_required) VALUES ('PileOfBear','Lorem Ipsum er rett og slett dummytekst fra og for trykkeindustrien. Lorem Ipsum har vært bransjens standard for dummytekst helt siden 1500-tallet, da en ukjent boktrykker stokket en mengde bokstaver for å lage et prøveeksemplar av en bok', 30)`
     ]
         
         let promises = []
@@ -96,6 +104,9 @@ init = async () => {
     });
 };
 
+/**
+ * Function for user authentication.
+ */
 auth = async (requestBody) => {
     return new Promise((resolve, reject) => {
         let {username, password} = requestBody;
@@ -148,14 +159,17 @@ auth = async (requestBody) => {
     });
 };
 
+/**
+ * Function for user registration.
+*/
 register = async (requestBody) => {
     return new Promise((resolve, reject) => {
-        let {username, email, password} = requestBody;
-        if(username && email && password) {
+        let {username, email, password, address, name, surname, phone} = requestBody;
+        if(username && email && password && address && name && surname && phone) {
             password = bcrypt.hashSync(password, 10)
             let query = `
-            INSERT INTO users (username, email, password) 
-            VALUES ('${username}', '${email}','${password}');`
+            INSERT INTO users (username, email, password, address, name, surname, phone) 
+            VALUES ('${username}','${email}','${password}','${address}','${name}','${surname}','${phone}');`
             
             pool.query(query, (error, results, fields) => {
                 if(error) {
@@ -194,6 +208,9 @@ register = async (requestBody) => {
     });
 };
 
+/**
+ * Function for update user data.
+ */
 updateUserData = async (username, requestBody) => {
     return new Promise((resolve, reject) => {
         if(username) {
@@ -228,6 +245,9 @@ updateUserData = async (username, requestBody) => {
     });
 };
 
+/**
+ * Function for make choosen user to operator.
+ */
 makeUserOperator = async (request) => {
     return new Promise((resolve, reject) => {
         let username = request.params.username;
@@ -261,6 +281,9 @@ makeUserOperator = async (request) => {
     });
 };
 
+/**
+ * Function to get all reports from system.
+ */
 getReports = async () => {
     return new Promise((resolve, reject) => {
         let query = `SELECT * FROM reports;`
@@ -297,6 +320,9 @@ checkRights = async (resource) => {
     });
 };
 
+/**
+ * Function to get all users from system.
+ */
 getUsers = async () => {
     return new Promise((resolve, reject) => {
         let query = `SELECT username, email FROM users;`
@@ -315,6 +341,9 @@ getUsers = async () => {
     });
 };
 
+/**
+ * Function to get user data.
+ */
 getUserData = async (request) => {
     return new Promise((resolve, reject) => {
         if(request.params.username) {
@@ -342,6 +371,9 @@ getUserData = async (request) => {
     });
 };
 
+/**
+ * Function for delete user.
+ */
 deleteUser = async (request) => {
     return new Promise((resolve, reject) => {
         if(request.params.username) {
@@ -370,6 +402,9 @@ deleteUser = async (request) => {
     });
 };
 
+/**
+ * Function for add report.
+ */
 postReport = async (requestBody) => {
     return new Promise((resolve, reject) => {
         let {username, longitude, latitude, category, description} = requestBody;
@@ -452,6 +487,9 @@ postReport = async (requestBody) => {
     });
 };
 
+/**
+ * Function for get awards of specifed user.
+ */
 getUserAwards = async (request) => {
     return new Promise((resolve, reject) => {
         if(request.params.username) {
@@ -480,6 +518,9 @@ getUserAwards = async (request) => {
     });
 };
 
+/**
+ * Function for give award to specified user.
+ */
 postUserAward = async (request) => {
     return new Promise((resolve, reject) => {
         if(request.params.username && request.params.awardname) {
@@ -557,6 +598,9 @@ postUserAward = async (request) => {
     });
 };
 
+/**
+ * Function to delete report.
+ */
 deleteReport = async (request) => {
     return new Promise((resolve, reject) => {
         let {longitude, latitude, category} = request.body;
@@ -586,6 +630,9 @@ deleteReport = async (request) => {
     });
 };
 
+/**
+ * Function to get reports statistics grouped by category.
+ */
 getReportStatistics = async (request) => {
     return new Promise((resolve, reject) => {
         let queryGetReportsStatistics = `SELECT category, COUNT(category) as count FROM reports GROUP BY category;`;
